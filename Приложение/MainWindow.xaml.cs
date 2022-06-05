@@ -117,33 +117,38 @@ namespace customs
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
-            //MessageBox.Show(output);
+            MessageBox.Show(output);
             result.Clear();
             grid.ItemsSource = null;
             grid.DataContext = null;
             grid.Items.Refresh();
-            output = output.Replace('"', ' ').Replace("{", "").Replace("}", "");
-            string[] str = output.Split(',');
-            
-            string[] postStr;
-            
-            for(int i=0; i < str.Length; i++)
+            if (output == "")
+                MessageBox.Show("Не получилось :/");
+            else
             {
-                
-                postStr = str[i].Split(':');
-                string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
-                string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
-                if (n_str[0] == '0' && n_str[1] == '0')
-                    n_str = "меньше 0";
-                if (n_str[0] == '0')
-                    n_str = n_str.Substring(1) ;
+                output = output.Replace('"', ' ').Replace("{", "").Replace("}", "");
+                string[] str = output.Split(',');
 
-                while (x_str.Length < 4)
-                    x_str = "0" + x_str;
+                string[] postStr;
 
-                result.Add(new Tables(new string(postStr[0].Where(t => char.IsDigit(t)).ToArray()), "", n_str + "%"));
+                for (int i = 0; i < str.Length; i++)
+                {
+
+                    postStr = str[i].Split(':');
+                    string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
+                    string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
+                    if (n_str[0] == '0' && n_str[1] == '0')
+                        n_str = "меньше 0";
+                    if (n_str[0] == '0')
+                        n_str = n_str.Substring(1);
+
+                    while (x_str.Length < 4)
+                        x_str = "0" + x_str;
+
+                    result.Add(new Tables(new string(postStr[0].Where(t => char.IsDigit(t)).ToArray()), "", n_str + "%"));
+                }
+                grid.ItemsSource = result;
             }
-            grid.ItemsSource = result;
         }
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
