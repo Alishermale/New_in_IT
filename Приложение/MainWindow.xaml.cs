@@ -86,7 +86,7 @@ namespace customs
                 MessageBox.Show("Не получилось :/");
             else
             {
-                output = output.Replace('"', ' ').Replace("{", "").Replace("}", "");
+                output = output.Replace('"', ' ').Replace("{", "").Replace("}", "").Replace("[","");
                 string[] str = output.Split(',');
 
                 string[] postStr;
@@ -105,7 +105,7 @@ namespace customs
                     while (x_str.Length < 4)
                         x_str = "0" + x_str;
 
-                    result.Add(new Tables(new string(postStr[0].Where(t => char.IsDigit(t)).ToArray()), "", n_str + "%"));
+                    result.Add(new Tables(x_str, "", n_str + "%"));
                 }
                 grid.ItemsSource = result;
             }
@@ -120,18 +120,68 @@ namespace customs
             if (!(filename == ""))
             {
                 fileText = System.IO.File.ReadAllLines(filename);
-                for (int i = 0; i < 100; i++) 
+                List<Tables> result4 = new List<Tables>();
+                for (int i = 0; i < 7; i++) 
                 {
                     SearchBox.Text = fileText[i];
-                    Button_Click(null, null);
-                        }
+                    eventsSearchBox(result4, fileText[i]);
+
+
+
+                }
+                grid.ItemsSource = result4;
                 MessageBox.Show("Успешно");
             }
             else
                 MessageBox.Show("Не получилось прочитать файл");
 
         }
+        List<Tables> eventsSearchBox(List<Tables> a,string text)
+        {
+            string fileName = @"cliet.py" + " \"" + SearchBox.Text.Replace("\"", "") + "\" " + "6";
 
+            Process p = new Process();
+            p.StartInfo = new ProcessStartInfo("python", fileName)
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            p.Start();
+
+            string output = StartClient(SearchBox.Text);//p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+
+            
+            if (output == "")
+                MessageBox.Show("Не получилось :/");
+            else
+            {
+                output = output.Replace('"', ' ').Replace("{", "").Replace("}", "").Replace("[", "");
+                string[] str = output.Split(',');
+
+                string[] postStr;
+
+                for (int i = 0; i < str.Length; i++)
+                {
+
+                    postStr = str[i].Split(':');
+                    string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
+                    string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
+                    if (n_str[0] == '0' && n_str[1] == '0')
+                        n_str = "меньше 0";
+                    if (n_str[0] == '0')
+                        n_str = n_str.Substring(1);
+
+                    while (x_str.Length < 4)
+                        x_str = "0" + x_str;
+
+                    a.Add(new Tables(x_str, text, n_str + "%"));
+                }
+                
+            }
+            return a;
+        }
         private void SearchBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
