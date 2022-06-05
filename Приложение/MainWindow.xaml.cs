@@ -74,25 +74,31 @@ namespace customs
             else
             {
                 output = output.Replace('"', ' ').Replace("{", "").Replace("}", "").Replace("[", "");
-                string[] str = output.Split(',');
 
+                string[] str = output.Split(',');
                 string[] postStr;
 
                 for (int i = 0; i < str.Length; i++)
                 {
-
                     postStr = str[i].Split(':');
+
                     string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
                     string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
+
+                    /*
                     if (n_str[0] == '0' && n_str[1] == '0')
                         n_str = "меньше 0";
                     if (n_str[0] == '0')
                         n_str = n_str.Substring(1);
+                    */
 
                     while (x_str.Length < 4)
                         x_str = "0" + x_str;
 
-                    result.Add(new Tables(x_str, "", n_str + "%"));
+                    ///..........................................................
+                    if (!(int.Parse(n_str) < 1))
+                        result.Add(new Tables(x_str, "", n_str + "%"));
+                    ///..........................................................
                 }
                 grid.ItemsSource = result;
             }
@@ -110,7 +116,7 @@ namespace customs
                 List<Tables> result4 = new List<Tables>();
                 for (int i = 0; i < fileText.Length; i++)
                 {
-                    eventsSearchBox(result4, fileText[i]); 
+                    eventsSearchBox(result4, fileText[i]);
                 }
                 grid.ItemsSource = result4;
                 MessageBox.Show("Успешно");
@@ -151,9 +157,8 @@ namespace customs
                     postStr = str[i].Split(':');
                     string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
                     string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
-                    if (n_str.Length >= 2)
-                        if (n_str[0] == '0' && n_str[1] == '0')
-                            n_str = "меньше 0";
+                    if (n_str[0] == '0' && n_str[1] == '0')
+                        n_str = "меньше 0";
                     if (n_str[0] == '0')
                         n_str = n_str.Substring(1);
 
