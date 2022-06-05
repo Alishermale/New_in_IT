@@ -33,7 +33,7 @@ namespace customs
         }
         private void ExitButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            this.Close();   
+            this.Close();
         }
         private void MinButton_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -41,7 +41,7 @@ namespace customs
         }
         private void ToolBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Left)
             {
                 this.DragMove();
             }
@@ -62,20 +62,7 @@ namespace customs
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            
-            string fileName = @"cliet.py" + " \"" + SearchBox.Text.Replace("\"", "") + "\" "+ "6";
-
-            Process p = new Process();
-            p.StartInfo = new ProcessStartInfo("python", fileName)
-            {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-            p.Start();
-
-            string output = StartClient(SearchBox.Text);//p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
+            string output = StartClient(SearchBox.Text);
 
             //MessageBox.Show(output);
             result.Clear();
@@ -86,7 +73,7 @@ namespace customs
                 MessageBox.Show("Не получилось :/");
             else
             {
-                output = output.Replace('"', ' ').Replace("{", "").Replace("}", "").Replace("[","");
+                output = output.Replace('"', ' ').Replace("{", "").Replace("}", "").Replace("[", "");
                 string[] str = output.Split(',');
 
                 string[] postStr;
@@ -121,13 +108,9 @@ namespace customs
             {
                 fileText = System.IO.File.ReadAllLines(filename);
                 List<Tables> result4 = new List<Tables>();
-                for (int i = 0; i < 7; i++) 
+                for (int i = 0; i < fileText.Length; i++)
                 {
-                    SearchBox.Text = fileText[i];
-                    eventsSearchBox(result4, fileText[i]);
-
-
-
+                    eventsSearchBox(result4, fileText[i]); 
                 }
                 grid.ItemsSource = result4;
                 MessageBox.Show("Успешно");
@@ -136,7 +119,7 @@ namespace customs
                 MessageBox.Show("Не получилось прочитать файл");
 
         }
-        List<Tables> eventsSearchBox(List<Tables> a,string text)
+        List<Tables> eventsSearchBox(List<Tables> a, string text)
         {
             string fileName = @"cliet.py" + " \"" + SearchBox.Text.Replace("\"", "") + "\" " + "6";
 
@@ -152,7 +135,7 @@ namespace customs
             string output = StartClient(text);//p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
-            
+
             if (output == "")
                 MessageBox.Show("Не получилось :/");
             else
@@ -178,7 +161,7 @@ namespace customs
 
                     a.Add(new Tables(x_str, text, n_str + "%"));
                 }
-                
+
             }
             return a;
         }
