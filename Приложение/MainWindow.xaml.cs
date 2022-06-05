@@ -62,9 +62,11 @@ namespace customs
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            string text = SearchBox.Text;
+            if (Double.TryParse(text, out double tmp))
+                return;
             string output = StartClient(SearchBox.Text);
 
-            //MessageBox.Show(output);
             result.Clear();
             grid.ItemsSource = null;
             grid.DataContext = null;
@@ -82,15 +84,14 @@ namespace customs
                 {
                     postStr = str[i].Split(':');
 
-                    string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
-                    string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
+                    string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray());
 
-                    /*
-                    if (n_str[0] == '0' && n_str[1] == '0')
-                        n_str = "меньше 0";
-                    if (n_str[0] == '0')
-                        n_str = n_str.Substring(1);
-                    */
+                    if (n_str[0] != '1')
+                        n_str = n_str.Substring(1, 2);
+                    else
+                        n_str = n_str.Substring(0, 3);
+
+                    string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
 
                     while (x_str.Length < 4)
                         x_str = "0" + x_str;
@@ -127,19 +128,8 @@ namespace customs
         }
         List<Tables> eventsSearchBox(List<Tables> a, string text)
         {
-            string fileName = @"cliet.py" + " \"" + SearchBox.Text.Replace("\"", "") + "\" " + "6";
 
-            Process p = new Process();
-            p.StartInfo = new ProcessStartInfo("python", fileName)
-            {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-            p.Start();
-
-            string output = StartClient(text);//p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
+            string output = StartClient(text);
 
 
             if (output == "")
@@ -155,12 +145,13 @@ namespace customs
                 {
 
                     postStr = str[i].Split(':');
-                    string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
+                    string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray());
+                    if( n_str[0] != '1')
+                        n_str = n_str.Substring(1, 2);
+                    //else
+                    //    n_str = n_str.Substring(0, 2);
                     string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
-                    if (n_str[0] == '0' && n_str[1] == '0')
-                        n_str = "меньше 0";
-                    if (n_str[0] == '0')
-                        n_str = n_str.Substring(1);
+
 
                     while (x_str.Length < 4)
                         x_str = "0" + x_str;
