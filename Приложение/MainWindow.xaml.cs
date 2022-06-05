@@ -52,7 +52,7 @@ namespace customs
             clientSocket.Connect("192.168.90.180", 5000);
 
             NetworkStream serverStream = clientSocket.GetStream();
-            byte[] outStream = Encoding.UTF8.GetBytes(text + "\u0017" + 6.ToString());
+            byte[] outStream = Encoding.UTF8.GetBytes(text + "\u0017" + 3.ToString());
             serverStream.Write(outStream, 0, outStream.Length);
             serverStream.Flush();
 
@@ -149,7 +149,7 @@ namespace customs
             };
             p.Start();
 
-            string output = StartClient(SearchBox.Text);//p.StandardOutput.ReadToEnd();
+            string output = StartClient(text);//p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
             
