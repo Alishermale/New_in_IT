@@ -12,7 +12,7 @@ class EchoHandler(BaseRequestHandler):
         if len(data) > 1:
             elementov = int(data[1])
             if elementov == 0:
-                predict = str(np.argmax(predict))
+                predict = reversed_categories[np.argmax(predict)]
             elif elementov == -1:
                 predict = [reversed_categories[x - 1] for x in reversed(np.argsort(predict)[0]) if x - 1 != -1]
             else:
