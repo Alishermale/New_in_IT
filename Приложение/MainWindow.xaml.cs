@@ -78,12 +78,12 @@ namespace customs
             p.WaitForExit();
 
             //MessageBox.Show(output);
-            //result.Clear();
-            //grid.ItemsSource = null;
-            //grid.DataContext = null;
-            //grid.Items.Refresh();
+            result.Clear();
+            grid.ItemsSource = null;
+            grid.DataContext = null;
+            grid.Items.Refresh();
             if (output == "")
-                ;// MessageBox.Show("Не получилось :/");
+                MessageBox.Show("Не получилось :/");
             else
             {
                 output = output.Replace('"', ' ').Replace("{", "").Replace("}", "");
