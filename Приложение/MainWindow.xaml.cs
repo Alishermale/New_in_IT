@@ -48,58 +48,18 @@ namespace customs
         }
         public static string StartClient(string text)
         {
-            byte[] bytes = new byte[1024];
-            string result = "";
-            try
-            {
-                IPHostEntry host = Dns.GetHostEntry("192.168.90.180");
-                IPAddress ipAddress = host.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 5000);
+            TcpClient clientSocket = new TcpClient();
+            clientSocket.Connect("192.168.90.180", 5000);
 
-                // Create a TCP/IP  socket.
-                Socket sender = new Socket(ipAddress.AddressFamily,
-                    SocketType.Stream, ProtocolType.Tcp);
+            NetworkStream serverStream = clientSocket.GetStream();
+            byte[] outStream = Encoding.UTF8.GetBytes(text + "\u0017" + 6.ToString());
+            serverStream.Write(outStream, 0, outStream.Length);
+            serverStream.Flush();
 
-                // Connect the socket to the remote endpoint. Catch any errors.
-                try
-                {
-                    // Connect to Remote EndPoint
-                    sender.Connect(remoteEP);
-
-                    // Encode the data string into a byte array.
-                    byte[] msg = Encoding.UTF8.GetBytes(text);
-
-                    // Send the data through the socket.
-                    int bytesSent = sender.Send(msg);
-
-                    // Receive the response from the remote device.
-                    int bytesRec = sender.Receive(bytes);
-                    result = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-
-                    // Release the socket.
-                    sender.Shutdown(SocketShutdown.Both);
-                    sender.Close();
-                }
-                catch (ArgumentNullException ane)
-                {
-                    MessageBox.Show("ArgumentNullException : {0}", ane.ToString());
-                }
-                catch (SocketException se)
-                {
-                    MessageBox.Show("SocketException : {0}", se.ToString());
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show("Unexpected exception : {0}", e.ToString());
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
-            return result;
+            byte[] inStream = new byte[10025];
+            serverStream.Read(inStream, 0, inStream.Length);
+            return Encoding.UTF8.GetString(inStream);
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             
@@ -114,16 +74,16 @@ namespace customs
             };
             p.Start();
 
-            string output = p.StandardOutput.ReadToEnd();
+            string output = StartClient(SearchBox.Text);//p.StandardOutput.ReadToEnd();
             p.WaitForExit();
 
-            MessageBox.Show(output);
-            result.Clear();
-            grid.ItemsSource = null;
-            grid.DataContext = null;
-            grid.Items.Refresh();
+            //MessageBox.Show(output);
+            //result.Clear();
+            //grid.ItemsSource = null;
+            //grid.DataContext = null;
+            //grid.Items.Refresh();
             if (output == "")
-                MessageBox.Show("Не получилось :/");
+                ;// MessageBox.Show("Не получилось :/");
             else
             {
                 output = output.Replace('"', ' ').Replace("{", "").Replace("}", "");
@@ -158,10 +118,24 @@ namespace customs
             string filename = ofd.FileName;
             string[] fileText;
             if (!(filename == ""))
+            {
                 fileText = System.IO.File.ReadAllLines(filename);
+                for (int i = 0; i < 100; i++) 
+                {
+                    SearchBox.Text = fileText[i];
+                    Button_Click(null, null);
+                        }
+                MessageBox.Show("Успешно");
+            }
             else
                 MessageBox.Show("Не получилось прочитать файл");
 
+        }
+
+        private void SearchBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                Button_Click(null, null);
         }
     }
 }

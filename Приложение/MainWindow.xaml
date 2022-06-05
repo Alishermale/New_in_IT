@@ -59,7 +59,7 @@
         <StackPanel Grid.Column="0" Margin="0 30 0 30" HorizontalAlignment="Center" Orientation="Horizontal">
             <TextBox x:Name="SearchBox" Width="655" Height="46" 
                      Style="{StaticResource ModernTextBox}" FontSize="19" 
-                     Margin="0 0 10 0" Tag="Введите ключевые слова"/>
+                     Margin="0 0 10 0" Tag="Введите ключевые слова" KeyDown="SearchBox_KeyDown"/>
             <Button Grid.Column="1" Grid.Row="1" Content="Check" Height="46" Width="168" Margin="0 0 10 0" Click="Button_Click"/>
             <Image Source="Images/icontxtbx.png" Width="46" Height="46" MouseDown="Image_MouseDown"/>
         </StackPanel>
