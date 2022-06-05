@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -30,7 +30,7 @@ namespace customs
             using (StreamReader r = new StreamReader("file.json"))
             {
                 string json = r.ReadToEnd();
-                List<Item> items = JsonConvert.DeserializeObject<List<Item>>(json);
+                //List<Item> items = JsonConvert.DeserializeObject<List<Item>>(json);
             }
         }
         private void grid_Loaded(object sender, RoutedEventArgs e)
@@ -71,24 +71,18 @@ namespace customs
             serverStream.Read(inStream, 0, inStream.Length);
             return Encoding.UTF8.GetString(inStream);
         }
-
-
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            /////////////////////////////////////////////////////////////////////////////////////////////
             string text = SearchBox.Text;
             if (Double.TryParse(text, out double tmp) || String.IsNullOrWhiteSpace(text))
             {
+                text = text.Trim();
                 if (text.Length < 4)
                 {
                     for (int i = text.Length; i < 4; i++)
                         text = "0" + text;
                 }
-
-                
-
-
-
 
                 return;
             }
@@ -126,34 +120,79 @@ namespace customs
 
                     ///..........................................................
                     if (!(int.Parse(n_str) < 1))
-                        result.Add(new Tables(x_str, "", n_str + "%"));
+                        result.Add(new Tables(x_str, SearchBox.Text, n_str + "%"));
                     ///..........................................................
                 }
                 grid.ItemsSource = result;
             }
         }
-
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.ShowDialog();
             string filename = ofd.FileName;
             string[] fileText;
+
             if (!(filename == ""))
             {
                 fileText = System.IO.File.ReadAllLines(filename);
                 List<Tables> result4 = new List<Tables>();
                 for (int i = 0; i < fileText.Length; i++)
                 {
-                    eventsSearchBox(result4, fileText[i]);
+                    filldatatable(fileText[i]);
+
+                    //eventsSearchBox(result4, fileText[i]);
                 }
-                grid.ItemsSource = result4;
+                //grid.ItemsSource = result4;
                 MessageBox.Show("Успешно");
             }
             else
                 MessageBox.Show("Не получилось прочитать файл");
-
         }
+        private void filldatatable(string input_str)
+        { 
+            string output = StartClient(input_str);
+
+            //result.Clear();
+            //grid.ItemsSource = null;
+            //grid.DataContext = null;
+
+            grid.Items.Refresh();
+            if (output == "")
+                MessageBox.Show("Не получилось :/");
+            else
+            {
+                output = output.Replace('"', ' ').Replace("{", "").Replace("}", "").Replace("[", "");
+
+                string[] str = output.Split(',');
+                string[] postStr;
+
+                postStr = str[0].Split(':');
+                try {
+
+                    string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray());
+                    string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
+
+                    if (n_str[0] != '1')
+                        n_str = n_str.Substring(1, 2);
+                    else
+                        n_str = n_str.Substring(0, 3);
+
+
+
+                    while (x_str.Length < 4)
+                        x_str = "0" + x_str;
+
+
+                    result.Add(new Tables(x_str, input_str, n_str + "%"));
+                    grid.ItemsSource = result;
+                }
+                catch {
+                    Console.WriteLine(postStr[0].ToString());
+                }
+            }
+        }
+        /*
         List<Tables> eventsSearchBox(List<Tables> a, string text)
         {
 
@@ -190,6 +229,7 @@ namespace customs
             }
             return a;
         }
+        */
         private void SearchBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
