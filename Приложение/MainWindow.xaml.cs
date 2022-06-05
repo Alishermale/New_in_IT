@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
+using System.IO;
 using System.Net.Sockets;
 using System.Linq;
 using System.Text;
@@ -11,6 +10,11 @@ using Microsoft.Win32;
 
 namespace customs
 {
+    public class Slovar
+    {
+        string key;
+        string value;
+    }
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
@@ -21,7 +25,14 @@ namespace customs
         {
             InitializeComponent();
         }
-
+        public void loadJson()
+        {
+            using (StreamReader r = new StreamReader("file.json"))
+            {
+                string json = r.ReadToEnd();
+                List<Item> items = JsonConvert.DeserializeObject<List<Item>>(json);
+            }
+        }
         private void grid_Loaded(object sender, RoutedEventArgs e)
         {
             List<Tables> result = new List<Tables>();
@@ -60,11 +71,28 @@ namespace customs
             serverStream.Read(inStream, 0, inStream.Length);
             return Encoding.UTF8.GetString(inStream);
         }
+
+
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string text = SearchBox.Text;
-            if (Double.TryParse(text, out double tmp))
+            if (Double.TryParse(text, out double tmp) || String.IsNullOrWhiteSpace(text))
+            {
+                if (text.Length < 4)
+                {
+                    for (int i = text.Length; i < 4; i++)
+                        text = "0" + text;
+                }
+
+                
+
+
+
+
                 return;
+            }
+
             string output = StartClient(SearchBox.Text);
 
             result.Clear();
