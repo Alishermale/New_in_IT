@@ -151,8 +151,9 @@ namespace customs
                     postStr = str[i].Split(':');
                     string n_str = new string(postStr[1].Where(t => char.IsDigit(t)).ToArray()).Substring(1, 2);
                     string x_str = new string(postStr[0].Where(t => char.IsDigit(t)).ToArray());
-                    if (n_str[0] == '0' && n_str[1] == '0')
-                        n_str = "меньше 0";
+                    if (n_str.Length >= 2)
+                        if (n_str[0] == '0' && n_str[1] == '0')
+                            n_str = "меньше 0";
                     if (n_str[0] == '0')
                         n_str = n_str.Substring(1);
 
